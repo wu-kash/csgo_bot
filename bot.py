@@ -27,7 +27,7 @@ def get_callout_map(map_name):
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')    
-csgo_bot = commands.Bot(command_prefix = 'cs.', case_insensitive = True, decription = "Hello!")
+csgo_bot = commands.Bot(command_prefix = 'cs.', case_insensitive = True)
     
 @csgo_bot.event
 async def on_connect():
