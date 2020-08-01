@@ -16,83 +16,53 @@ csgo_bot = commands.Bot(command_prefix = 'cs.', case_insensitive = True)
     
 ''' Functions '''
 
-def do_callout(msg_str):
-    map_name = msg_str.split(" ")[1]
+def get_item(msg_str):
+    
+    command = msg_str.split(".")[1].split(" ")[0]
+    item_name = msg_str.split(" ")[1]
         
-    print("Retrieving callout map for {}".format(map_name))
     
-    callout_map_dir = os.path.join(os.getcwd(), 'callout_maps')
+    item_dir = os.path.join(os.getcwd(), command)
     
-    callout_list = []
+    item_list = []
     
-    for image in os.listdir(callout_map_dir):
-        if map_name in image:
-            callout_list.append(os.path.join(callout_map_dir, image))
+    for image in os.listdir(item_dir):
+        if item_name in image:
+            item_list.append(os.path.join(item_dir, image))
 
-    if len(callout_list) < 1:
-        callout_list.append(os.path.join(callout_map_dir, 'callout_404.png'))
+    if len(item_list) < 1:
+        item_list.append(os.path.join(item_dir, '{}_404.png'.format(command)))
    
-    return callout_list
+    return item_list
+
+def get_nade(msg_str):
+
+    # cs.nadetype map from to
     
-def do_smoke(msg_str):
+    command = msg_str.split(".")[1].split(" ")[0]
     
-    # cs.smoke dust2 ctspawn snipers
-    
-    smoke_map = msg_str.split(" ")[1]
-    smoke_from = msg_str.split(" ")[2]
+    nade_map = msg_str.split(" ")[1]
+    nade_from = msg_str.split(" ")[2]
     try:
-        smoke_to = msg_str.split(" ")[3]
+        nade_to = msg_str.split(" ")[3]
     except IndexError:
-        smoke_to = ""
+        nade_to = ""
         
-    smoke_desc = smoke_from + "_" + smoke_to
+    nade_desc = nade_from + "_" + nade_to
 
-    print("Map: " + smoke_map)
-    print("From " + smoke_from + ", to " + smoke_to)
+    nade_dir = os.path.join(os.getcwd(), command)
+    nade_map_dir =  os.path.join(nade_dir, nade_map)
     
-    smoke_dir = os.path.join(os.getcwd(), 'smokes')
-    smoke_map_dir =  os.path.join(smoke_dir, smoke_map)
+    nade_list = []
     
-    smoke_list = []
+    for image in os.listdir(nade_map_dir):
+        if nade_desc in image:
+            nade_list.append(os.path.join(nade_map_dir, image))
     
-    for image in os.listdir(smoke_map_dir):
-        if smoke_desc in image:
-            smoke_list.append(os.path.join(smoke_map_dir, image))
-    
-    if len(smoke_list) < 1:
-        smoke_list.append(os.path.join(smoke_dir, 'smoke_404.png'))
+    if len(nade_list) < 1:
+        nade_list.append(os.path.join(nade_dir, '{}_404.png'.format(command)))
    
-    return smoke_list
-
-def do_molotov(msg_str):
-    
-    # cs.smoke dust2 ctspawn snipers
-    
-    molotov_map = msg_str.split(" ")[1]
-    molotov_from = msg_str.split(" ")[2]
-    try:
-        molotov_to = msg_str.split(" ")[3]
-    except IndexError:
-        molotov_to = ""
-        
-    molotov_desc = molotov_from + "_" + molotov_to
-
-    print("Map: " + molotov_map)
-    print("From " + molotov_from + ", to " + molotov_to)
-    
-    molotov_dir = os.path.join(os.getcwd(), 'molotovs')
-    molotov_map_dir =  os.path.join(molotov_dir, molotov_map)
-    
-    molotov_list = []
-    
-    for image in os.listdir(molotov_map_dir):
-        if molotov_desc in image:
-            molotov_list.append(os.path.join(molotov_map_dir, image))
-    
-    if len(molotov_list) < 1:
-        molotov_list.append(os.path.join(molotov_dir, 'molotov_404.png'))
-   
-    return molotov_list
+    return nade_list
     
 ''' Start '''
 
@@ -123,21 +93,20 @@ async def on_message(message):
         return
     
     if message.content.startswith("cs.callout"):
-        callout_list = do_callout(msg_str)
+        file_list = get_item(msg_str)
+                
+    if message.content.startswith("cs.spray"):
+        file_list = get_item(msg_str)
+        
+    if message.content.startswith("cs.weapon"):
+        file_list = get_item(msg_str)
+        
+    if message.content.startswith("cs.smoke") or message.content.startswith("cs.molotov"):
+        file_list = get_nade(msg_str)
     
-        for file_name in callout_list:
-            await channel.send(file=discord.File(file_name))
-
-    if message.content.startswith("cs.smoke"):
-        smoke_list = do_smoke(msg_str)
     
-        for file_name in smoke_list:
-            await channel.send(file=discord.File(file_name))
-            
-    if message.content.startswith("cs.molotov"):
-        molotov_list = do_molotov(msg_str)
-    
-        for file_name in molotov_list:
+    if len(file_list) > 0:
+        for file_name in file_list:
             await channel.send(file=discord.File(file_name))
        
         
